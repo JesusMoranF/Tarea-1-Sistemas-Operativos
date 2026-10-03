@@ -85,7 +85,7 @@ void ejecutar_actividad(const Activity &act, int fdEntrada, int fdSalida, int po
     // se usa nanosleep en vez de un loop de polling
     struct timespec tiempo;
     tiempo.tv_sec = act.tiempo_ms / 1000;
-    tiempo.tv_nsec = (act.tiempo_ms % 1000) * 1000000L;
+    tiempo.tv_nsec = (act.tiempo_ms % 1000) * 1000;
     while (nanosleep(&tiempo, &tiempo) == -1 && errno == EINTR){
         continue; // reintentar con el tiempo que queda
     }

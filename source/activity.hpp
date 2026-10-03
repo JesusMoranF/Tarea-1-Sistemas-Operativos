@@ -11,6 +11,6 @@
 // porcentajeFallo: probabilidad 0-100 de fallo simulado, solo para poder demostrar el aislamiento de errores ya que no fallaria realmente
 
 
-void activity_run_child(const Activity &actividades, int fdEntrada, int fdSalida, int porcentajeFallo);
+void void ejecutar_actividad(const Activity &actividades, int fdEntrada, int fdSalida, int porcentajeFallo);
 
 #endif 

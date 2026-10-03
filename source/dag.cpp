@@ -36,7 +36,7 @@ vector<string> split(const string &s, char delim){
 }
 
 long random_tiempo() {
-    return tiempo_max + (rand() % (tiempo_max - tiempo_min + 1));
+    return tiempo_min + (rand() % (tiempo_max - tiempo_min + 1));
 }
 
 } 

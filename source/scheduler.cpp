@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#define tamano_max 4096
+
 volatile sig_atomic_t sigintRecibido = 0;
 
 extern "C" void manejador_sigint(int){
@@ -52,12 +54,13 @@ pid_t lanzar_actividad(Dag &dag, int idx, SchedulerConfig cfg){
     //  proceso padre
     close(pipeEntrada[0]);
     close(pipeSalida[1]);
-    close(pipeEntrada[1]);
-
-    if (a.msgSalida.size() > 0){
+    
+  if (a.msgSalida.size() > 0){
         ssize_t w = write(pipeEntrada[1], a.msgSalida.data(), a.msgSalida.size());
         (void)w; // si falla el hijo simplemente no recibe insumo
    }
+    
+    close(pipeEntrada[1]);
 
     a.pid = pid;
     a.fd_salida = pipeSalida[0];
@@ -100,7 +103,7 @@ void marcar_exito(Dag &dag, int idx, const string &detalle){
         int v = a.sucesores[k];
         Activity &av = dag.actividades[v];
 
-        if (av.state != PENDING){
+        if (av.estado != PENDING){
             continue; // ya fallo o ya fue abortada
       }
 

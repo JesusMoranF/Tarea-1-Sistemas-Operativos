@@ -92,7 +92,7 @@ bool dag_load(Dag &dag, const string &path){
         a.dep_pendientes = 0;
         a.estado = PENDING;
         a.pid = -1;
-        a.fd_respuesta = -1;
+        a.fd_salida = -1;
 
         if (tiempo_str.empty()){
             a.tiempo_ms = random_tiempo();
@@ -177,7 +177,7 @@ bool es_aciclico(const Dag &dag){
     }
 
     int visitados = 0;
-    for (int j = 0; j <= (int)cola.size(); j++){
+    for (int j = 0; j < (int)cola.size(); j++){
         int u = cola[j];
         visitados++;
         const Activity &au = dag.actividades[u];

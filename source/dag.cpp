@@ -162,7 +162,7 @@ bool dag_load(Dag &dag, const string &path){
     return true;
 }
 
-bool dag_check_acyclic(const Dag &dag){
+bool es_aciclico(const Dag &dag){
     int total = (int)dag.actividades.size();
     vector<int> deps_aux(total);
     for (int i = 0; i < total; i++){

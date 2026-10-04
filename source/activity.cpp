@@ -52,14 +52,14 @@ void write_all(int fd, const char *buf, size_t len){
     }
 }
 
-void ejecutar_actividad(const Activity &act, int fdEntrada, int fdSalida, int porcentajeFallo){
+void ejecutar_actividad(const Activity &actividades, int fdEntrada, int fdSalida, int porcentajeFallo){
 
     // el SIGINT lo maneja unicamente el padre, que decide de forma ordenada abortar todo y el hijo lo ignora para no duplicar logicá
     signal(SIGINT, SIG_IGN);
 
     // se prepara el mensaje de aborto por si llega un SIGTERM del padre mientras esta corriendo
     fdSalidaGlobal = fdSalida;
-    int largoAborto = snprintf(msgAborto, sizeof(msgAborto), "ABORT|%s|%s|interrumpida por senal", act.id.c_str(), act.nombre.c_str());
+    int largoAborto = snprintf(msgAborto, sizeof(msgAborto), "ABORT|%s|%s|interrumpida por senal", actividades.id.c_str(), actividades.nombre.c_str());
     if (largoAborto > 0){
         lenAborto = static_cast<size_t>(largoAborto);
     }else{
@@ -73,9 +73,9 @@ void ejecutar_actividad(const Activity &act, int fdEntrada, int fdSalida, int po
     close(fdEntrada);
 
     if (strlen(msgEntrada) > 0){
-        printf("[Actividad %s] '%s' recibio insumo: %s\n", act.id.c_str(), act.nombre.c_str(), msgEntrada);
+        printf("[Actividad %s] '%s' recibio insumo: %s\n", actividades.id.c_str(), actividades.nombre.c_str(), msgEntrada);
     } else{
-        printf("[Actividad %s] '%s' no tiene dependencias, comienza de inmediato\n", act.id.c_str(), act.nombre.c_str());
+        printf("[Actividad %s] '%s' no tiene dependencias, comienza de inmediato\n", actividades.id.c_str(), actividades.nombre.c_str());
     }
     fflush(stdout);
 
@@ -84,8 +84,8 @@ void ejecutar_actividad(const Activity &act, int fdEntrada, int fdSalida, int po
 
     // se usa nanosleep en vez de un loop de polling
     struct timespec tiempo;
-    tiempo.tv_sec = act.tiempo_ms / 1000;
-    tiempo.tv_nsec = (act.tiempo_ms % 1000) * 1000000L;
+    tiempo.tv_sec = actividades.tiempo_ms / 1000;
+    tiempo.tv_nsec = (actividades.tiempo_ms % 1000) * 1000000L;
     while (nanosleep(&tiempo, &tiempo) == -1 && errno == EINTR){
         continue; // reintentar con el tiempo que queda
     }
@@ -100,18 +100,18 @@ void ejecutar_actividad(const Activity &act, int fdEntrada, int fdSalida, int po
 
     char msgSalida[tamano_max];
     if (fallo){
-        int largoFallo = snprintf(msgSalida, sizeof(msgSalida), "FAIL|%s|%s|error simulado durante la ejecucion", act.id.c_str(), act.nombre.c_str());
+        int largoFallo = snprintf(msgSalida, sizeof(msgSalida), "FAIL|%s|%s|error simulado durante la ejecucion", actividades.id.c_str(), actividades.nombre.c_str());
         write_all(fdSalida, msgSalida, static_cast<size_t>(largoFallo));
         close(fdSalida);
-        printf("[Actividad %s] '%s' FALLO\n", act.id.c_str(), act.nombre.c_str());
+        printf("[Actividad %s] '%s' FALLO\n", actividades.id.c_str(), actividades.nombre.c_str());
         fflush(stdout);
         _exit(1);
     }                      //por si falla o no falla
 
-    int largoOk = snprintf(msgSalida, sizeof(msgSalida), "OK|%s|%s|listo (%ldms)", act.id.c_str(), act.nombre.c_str(), act.tiempo_ms);
+    int largoOk = snprintf(msgSalida, sizeof(msgSalida), "OK|%s|%s|listo (%ldms)", actividades.id.c_str(), actividades.nombre.c_str(), actividades.tiempo_ms);
     write_all(fdSalida, msgSalida, static_cast<size_t>(largoOk));
     close(fdSalida);
-    printf("[Actividad %s] '%s' completada exitosamente\n", act.id.c_str(), act.nombre.c_str());
+    printf("[Actividad %s] '%s' completada exitosamente\n", actividades.id.c_str(), actividades.nombre.c_str());
     fflush(stdout);
     _exit(0);
 }

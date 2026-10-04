@@ -112,7 +112,7 @@ void marcar_exito(Dag &dag, int idx, const string &detalle){
         }
         av.msgSalida = av.msgSalida + a.id + ":" + detalle;
 
-        a.dep_pendientes = a.dep_pendientes - 1;
+        av.dep_pendientes = av.dep_pendientes - 1;
      }
 }
 

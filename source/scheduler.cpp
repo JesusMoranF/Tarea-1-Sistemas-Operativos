@@ -254,7 +254,7 @@ bool scheduler_run(Dag &dag, int k, SchedulerConfig cfg){
         string mensajeResultado(mensaje);
 
         bool salioOk = false;
-        if (WIFEXITED(status) && status == 0){
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 0){
             salioOk = true;
         }
 
